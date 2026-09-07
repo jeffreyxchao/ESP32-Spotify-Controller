@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify IoT Macro Pad Configurator</title>
+  <!-- Outfit Font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons for vector-based clean SVG icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="glass-bg-glow"></div>
+  <div class="glass-bg-glow secondary"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i data-lucide="music-4" class="neon-icon"></i>
+        </div>
+        <div class="logo-text">
+          <h1>IoT Spotify Controller</h1>
+          <p>ESP32 4-Key Mechanical Macro Pad Configurator</p>
+        </div>
+      </div>
+      <div class="status-bar">
+        <div class="status-item" id="device-status">
+          <span class="status-dot green pulse"></span>
+          <span class="status-label">Simulator: Active</span>
+        </div>
+        <div class="status-item" id="config-status">
+          <span class="status-dot yellow"></span>
+          <span class="status-label">Config State: Local (Saved)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Dashboard -->
+    <main class="dashboard-grid">
+      
+      <!-- LEFT COLUMN: Physical & Mock Visualizers -->
+      <section class="visualizer-column">
+        <!-- Mechanical Keyboard Visualizer -->
+        <div class="card glass-card macropad-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i data-lucide="keyboard" class="title-icon"></i>
+              Interactive Macro Pad
+            </h2>
+            <span class="badge">Click a key to configure</span>
+          </div>
+          <div class="card-body macropad-body">
+            <!-- 3D Casing for Macropad -->
+            <div class="macropad-case">
+              <div class="macropad-plate">
+                <div class="macropad-grid">
+                  <!-- Key 1 -->
+                  <div class="keycap-container" id="key-container-1" data-key-id="1">
+                    <button class="keycap active-glow" id="key-1">
+                      <div class="keycap-top">
+                        <span class="key-legend">K1</span>
+                        <div class="key-sublegend" id="key-sub-1">Play</div>
+                      </div>
+                    </button>
+                    <div class="key-shadow"></div>
+                    <div class="rgb-underglow" id="rgb-1"></div>
+                  </div>
+
+                  <!-- Key 2 -->
+                  <div class="keycap-container" id="key-container-2" data-key-id="2">
+                    <button class="keycap active-glow" id="key-2">
+                      <div class="keycap-top">
+                        <span class="key-legend">K2</span>
+                        <div class="key-sublegend" id="key-sub-2">Next</div>
+                      </div>
+                    </button>
+                    <div class="key-shadow"></div>
+                    <div class="rgb-underglow" id="rgb-2"></div>
+                  </div>
+
+                  <!-- Key 3 -->
+                  <div class="keycap-container" id="key-container-3" data-key-id="3">
+                    <button class="keycap active-glow" id="key-3">
+                      <div class="keycap-top">
+                        <span class="key-legend">K3</span>
+                        <div class="key-sublegend" id="key-sub-3">Prev</div>
+                      </div>
+                    </button>
+                    <div class="key-shadow"></div>
+                    <div class="rgb-underglow" id="rgb-3"></div>
+                  </div>
+
+                  <!-- Key 4 -->
+                  <div class="keycap-container" id="key-container-4" data-key-id="4">
+                    <button class="keycap active-glow" id="key-4">
+                      <div class="keycap-top">
+                        <span class="key-legend">K4</span>
+                        <div class="key-sublegend" id="key-sub-4">Like</div>
+                      </div>
+                    </button>
+                    <div class="key-shadow"></div>
+                    <div class="rgb-underglow" id="rgb-4"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="case-edge"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spotify Mock Player Simulator -->
+        <div class="card glass-card player-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i data-lucide="play-circle" class="title-icon green-icon"></i>
+              Spotify Player Simulator
+            </h2>
+            <div class="wifi-indicator">
+              <i data-lucide="wifi" class="wifi-icon animate-pulse"></i>
+              <span>ESP32 Link</span>
+            </div>
+          </div>
+          <div class="card-body player-body">
+            <div class="spotify-widget">
+              <div class="album-art-container">
+                <img src="" alt="Album Art" id="album-art" class="album-art">
+                <div class="music-bars" id="music-bars">
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                </div>
+              </div>
+              
+              <div class="player-details">
+                <div class="track-info">
+                  <h3 id="track-name" class="track-name">Loading Song...</h3>
+                  <p id="artist-name" class="artist-name">Loading Artist...</p>
+                </div>
+                <div class="player-controls-display">
+                  <button class="player-control-btn" id="sim-btn-shuffle"><i data-lucide="shuffle" class="widget-icon"></i></button>
+                  <button class="player-control-btn" id="sim-btn-prev"><i data-lucide="skip-back" class="widget-icon"></i></button>
+                  <button class="player-control-btn play-pause-btn" id="sim-btn-play"><i data-lucide="play" class="widget-icon fill-play"></i></button>
+                  <button class="player-control-btn" id="sim-btn-next"><i data-lucide="skip-forward" class="widget-icon"></i></button>
+                  <button class="player-control-btn" id="sim-btn-repeat"><i data-lucide="repeat" class="widget-icon"></i></button>
+                </div>
+                <div class="progress-bar-container">
+                  <span class="time current" id="track-progress-time">0:00</span>
+                  <div class="progress-bar-bg" id="progress-bar-click-area">
+                    <div class="progress-bar-fill" id="track-progress-fill"></div>
+                  </div>
+                  <span class="time duration" id="track-duration-time">3:24</span>
+                </div>
+                <div class="player-bottom-controls">
+                  <div class="volume-control">
+                    <i data-lucide="volume-2" class="volume-icon" id="sim-volume-icon"></i>
+                    <div class="volume-slider-bg">
+                      <div class="volume-slider-fill" id="sim-volume-fill" style="width: 75%;"></div>
+                    </div>
+                  </div>
+                  <button class="like-btn" id="sim-btn-like">
+                    <i data-lucide="heart" class="heart-icon" id="sim-heart-icon"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="simulator-log">
+              <span class="log-tag">SIMULATOR LOG</span>
+              <div class="log-messages" id="sim-log-output">
+                <div class="log-line text-muted">&gt; Configurator initialized. Click key above or press trigger to test.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Mappings Configuration & Management -->
+      <section class="control-column">
+        <!-- Key Editor Configuration Panel -->
+        <div class="card glass-card editor-card" id="editor-container">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i data-lucide="sliders" class="title-icon"></i>
+              Key <span id="editor-key-number">1</span> Mapping Editor
+            </h2>
+            <button class="btn btn-secondary btn-small" id="btn-quick-test">
+              <i data-lucide="zap" class="btn-icon"></i> Simulate Tap
+            </button>
+          </div>
+          <div class="card-body editor-body">
+            <form id="mapping-form" class="editor-form">
+              <input type="hidden" id="edit-key-id" value="1">
+              
+              <!-- Custom Name / Legend Label -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-key-label">Keycap Label (Legend)</label>
+                  <input type="text" id="edit-key-label" maxlength="8" placeholder="e.g. Play, Next, Vol +" class="form-control">
+                  <span class="input-desc">Max 8 characters to display on the visual keycap.</span>
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-gpio-pin">ESP32 GPIO Pin</label>
+                  <input type="number" id="edit-gpio-pin" min="0" max="39" class="form-control" required>
+                  <span class="input-desc">Physical GPIO pin mapped to this switch.</span>
+                </div>
+              </div>
+
+              <!-- Trigger Event & Action -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-trigger-type">Trigger Event</label>
+                  <div class="select-wrapper">
+                    <select id="edit-trigger-type" class="form-control">
+                      <option value="single_press">Single Press (default)</option>
+                      <option value="double_press">Double Press</option>
+                      <option value="long_press">Long Press (&gt; 800ms)</option>
+                    </select>
+                  </div>
+                  <span class="input-desc">The type of press detected by the ESP32.</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="edit-spotify-action">Spotify Action</label>
+                  <div class="select-wrapper">
+                    <select id="edit-spotify-action" class="form-control">
+                      <option value="play_pause">Play / Pause Toggle</option>
+                      <option value="next_track">Skip to Next Track</option>
+                      <option value="prev_track">Skip to Previous Track</option>
+                      <option value="like_track">Like / Heart Track</option>
+                      <option value="volume_up">Volume Up (+10%)</option>
+                      <option value="volume_down">Volume Down (-10%)</option>
+                      <option value="shuffle_toggle">Shuffle Toggle</option>
+                      <option value="repeat_toggle">Repeat Toggle</option>
+                      <option value="mute_toggle">Mute / Unmute Toggle</option>
+                      <option value="none">None (Disabled)</option>
+                    </select>
+                  </div>
+                  <span class="input-desc">Action triggered on Spotify.</span>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="btn-reset-key">Reset to Default</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-key">
+                  <i data-lucide="check" class="btn-icon"></i> Apply Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Mappings Table / Overview Card -->
+        <div class="card glass-card mapping-list-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i data-lucide="list-checks" class="title-icon"></i>
+              Current Mappings Overview
+            </h2>
+            <button class="btn btn-secondary btn-small" id="btn-reset-all">Reset All Keys</button>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table class="mappings-table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>GPIO</th>
+                    <th>Trigger</th>
+                    <th>Spotify Action</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="mappings-table-body">
+                  <!-- Generated dynamically in JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <p>Spotify IoT Macro Pad Configurator &copy; 2026. Custom layout structure ready for API updates.</p>
+      </div>
+      <div class="footer-right">
+        <a href="#" class="footer-link" id="btn-help-modal">
+          <i data-lucide="info" class="footer-icon"></i> Mapping Guide
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Help Guide Modal -->
+  <div class="modal-backdrop" id="help-modal">
+    <div class="modal glass-modal">
+      <div class="modal-header">
+        <h2>Spotify Controller Configuration Guide</h2>
+        <button class="close-btn" id="btn-close-help">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h3>How to Configure</h3>
+        <ol>
+          <li><strong>Select a Key:</strong> Click any of the four mechanical keys on the interactive visual pad. The editor on the right will focus on that key.</li>
+          <li><strong>Map Functionality:</strong> Customize the physical ESP32 GPIO pin number (e.g., check your ESP32 board schematic for free pins), select the trigger pattern (single tap, double, or long press), and choose the Spotify playback action.</li>
+          <li><strong>Aesthetics:</strong> Change the custom text displayed on the visual keycap. The key underglow updates automatically to match its Spotify action.</li>
+          <li><strong>Apply:</strong> Click "Apply Changes". The key's visual legend, LED lighting, and table will update instantly.</li>
+        </ol>
+
+        <h3>Testing Your Setup</h3>
+        <p>Use the <strong>"Simulate Tap"</strong> button in the editor or simply click/tap the mechanical keys in the visualizer to test. The <strong>Spotify Player Simulator</strong> widget will trigger events matching your configurations. For example, triggering a key mapped to <em>Next Track</em> will skip the current simulated song, and <em>Like Track</em> will toggle the glowing green heart.</p>
+
+        <h3>ESP32 Development Ready</h3>
+        <p>The state stores configurations in a highly standard JSON structure:
+          <pre><code>[
+  { "keyId": 1, "gpio": 23, "action": "play_pause", "trigger": "single_press", "label": "Play" },
+  ...
+]</code></pre>
+          This clean array is stored in the browser's <code>localStorage</code>. In the future, this layout can be easily adapted to send data over a Serial Port or WiFi endpoint.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btn-close-help-confirm">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
